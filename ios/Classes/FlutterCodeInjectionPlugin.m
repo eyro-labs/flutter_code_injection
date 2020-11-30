@@ -22,6 +22,18 @@
         return;
     }
     
+    if ([@"checkDynamicLibrary" isEqualToString:call.method]) {
+        char *env = getenv("DYLD_INSERT_LIBRARIES");
+        if (env == nil) {
+            result(nil);
+        } else {
+            result([FlutterError errorWithCode:@"DYNAMIC_LIBRARY"
+                                       message:@"There is a dynamic library inserted!"
+                                       details:[NSString stringWithUTF8String:env]]);
+        }
+        return;
+    }
+    
     result(FlutterMethodNotImplemented);
 }
 

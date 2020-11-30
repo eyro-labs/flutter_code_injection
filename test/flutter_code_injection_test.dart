@@ -16,6 +16,10 @@ void main() {
       if (methodCall.method == 'checkWhiteListLibraries') {
         return methodCall.arguments is List && methodCall.arguments.length == 2;
       }
+
+      if (methodCall.method == 'checkDynamicLibrary') {
+        return false;
+      }
     });
   });
 
@@ -29,5 +33,9 @@ void main() {
 
   test('checkWhiteListLibraries', () async {
     expect(await flutterCodeInjection.checkWhiteListLibraries(['/lib/1', '/lib/2']), true);
+  });
+
+  test('checkDynamicLibrary', () async {
+    expect(await flutterCodeInjection.checkDynamicLibrary(), false);
   });
 }

@@ -31,6 +31,15 @@ class FlutterCodeInjection {
       throw FlutterCodeInjectionException(e);
     }
   }
+
+  Future<bool> checkDynamicLibrary() async {
+    try {
+      await _channel.invokeMethod('checkDynamicLibrary');
+      return false;
+    } on PlatformException catch (e) {
+      throw FlutterCodeInjectionException(e);
+    }
+  }
 }
 
 class FlutterCodeInjectionException implements Exception {
@@ -47,6 +56,8 @@ class FlutterCodeInjectionException implements Exception {
   static List<String> _parseDetail(dynamic details) {
     if (details is List) {
       return details.map((d) => d.toString()).toList();
+    } else if (details is String) {
+      return [details];
     }
     return null;
   }
