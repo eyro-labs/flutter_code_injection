@@ -2,6 +2,8 @@ package id.co.eyro.flutter_code_injection;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -25,11 +27,25 @@ public class FlutterCodeInjectionPlugin implements FlutterPlugin, MethodCallHand
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-    if (call.method.equals("getPlatformVersion")) {
-      result.success("Android " + android.os.Build.VERSION.RELEASE);
-    } else {
-      result.notImplemented();
+    if ("getWhiteListLibraries".equals(call.method)) {
+      // TODO: return all used libraries
+      result.success(new ArrayList<String>());
+      return;
     }
+
+    if ("checkWhiteListLibraries".equals(call.method)) {
+      // TODO: check for existing libraries with whitelisted libraries from arguments
+      result.success(true);
+      return;
+    }
+
+    if ("checkDynamicLibrary".equals(call.method)) {
+      // TODO: check if dynamic library inserted
+      result.success(null);
+      return;
+    }
+
+    result.notImplemented();
   }
 
   @Override
