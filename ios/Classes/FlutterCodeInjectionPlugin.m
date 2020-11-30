@@ -71,10 +71,10 @@
         
         if (!strstr(libraries, imageName) && !strstr(imageName, "/var/mobile/Containers/Bundle/Application")) {
             // Workaround to filter the generated UUID of an Application
-            BOOL notListed = NO;
+            BOOL notListed = YES;
             for (NSString *lib in array) {
-                if (!strstr(imageName, [lib UTF8String])) {
-                    notListed = YES;
+                if (strstr(imageName, [lib UTF8String])) {
+                    notListed = NO;
                     break;
                 }
             }
