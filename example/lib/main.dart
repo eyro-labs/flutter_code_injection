@@ -13,11 +13,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  FlutterCodeInjectionException error;
-  bool checking = false;
+  FlutterCodeInjectionException error, errorDynamicLibrary;
+  bool checking = false, checkingDynamicLibrary = false;
 
   // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
+  Future<void> checkCodeInjection() async {
     setState(() {
       error = null;
       checking = true;
@@ -46,19 +46,55 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<void> checkDynamicLibrary() async {
+    setState(() {
+      errorDynamicLibrary = null;
+      checkingDynamicLibrary = true;
+    });
+
+    try {
+      await Future.delayed(Duration(seconds: 2));
+      await flutterCodeInjection.checkDynamicLibrary();
+    } on FlutterCodeInjectionException catch (e) {
+      errorDynamicLibrary = e;
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      checkingDynamicLibrary = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     int index = 1;
 
-    final tileHeader = ListTile(
-      title: Text('Check for code injection'),
+    final tileDynamicLibrary = ListTile(
+      title: Text('Check for Dynamic Library'),
+      subtitle: errorDynamicLibrary == null
+          ? checkingDynamicLibrary
+              ? Text('Checking...')
+              : null
+          : Text('Found ${errorDynamicLibrary.unListedLibraries.first}'),
+      trailing: RaisedButton.icon(
+        onPressed: checkingDynamicLibrary ? null : checkDynamicLibrary,
+        icon: Icon(Icons.extension),
+        label: Text('Check'),
+        color: Theme.of(context).primaryColor,
+        textColor: Colors.white,
+      ),
+    );
+
+    final tileCodeInjection = ListTile(
+      title: Text('Check for Code Injection'),
       subtitle: error == null
           ? checking
               ? Text('Checking...')
               : null
           : Text('Found ${error.unListedLibraries.length} unlisted libraries'),
       trailing: RaisedButton.icon(
-        onPressed: checking ? null : initPlatformState,
+        onPressed: checking ? null : checkCodeInjection,
         icon: Icon(Icons.extension),
         label: Text('Check'),
         color: Theme.of(context).primaryColor,
@@ -97,7 +133,9 @@ class _MyAppState extends State<MyApp> {
         ),
         body: ListView(
             children: [
-          tileHeader,
+          tileDynamicLibrary,
+          divider,
+          tileCodeInjection,
           divider,
         ]
               ..add(loading)
