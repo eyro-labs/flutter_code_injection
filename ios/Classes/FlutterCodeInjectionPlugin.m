@@ -70,7 +70,18 @@
         const char * imageName = _dyld_get_image_name(i);
         
         if (!strstr(libraries, imageName) && !strstr(imageName, "/var/mobile/Containers/Bundle/Application")) {
-            [unListedLibraries addObject:[NSString stringWithUTF8String:imageName]];
+            // Workaround to filter the generated UUID of an Application
+            BOOL notListed = NO;
+            for (NSString *lib in array) {
+                if (!strstr(imageName, [lib UTF8String]) && !strstr(imageName, "/var/mobile/Containers/Bundle/Application")) {
+                    notListed = YES;
+                    break;
+                }
+            }
+            
+            if (notListed) {
+                [unListedLibraries addObject:[NSString stringWithUTF8String:imageName]];
+            }
         }
     }
     
